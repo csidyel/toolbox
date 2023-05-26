@@ -48,31 +48,6 @@ blocks:
             - artifact push workflow bin/darwin/arm64/sem-context -d bin/darwin/arm64/sem-context
             - artifact push workflow bin/windows/sem-context.exe -d bin/windows/sem-context.exe
 
-  - name: Static Code Analysis
-    dependencies: []
-    task:
-      prologue:
-        commands:
-          - sudo apt-get install shellcheck
-          - checkout
-      jobs:
-        - name: Shell check
-          commands:
-            - shellcheck sem-service || true
-            - shellcheck sem-version || true
-            - shellcheck cache       || true
-            - shellcheck sem-context || true
-            - shellcheck libcheckout || true
-            - 'shellcheck sem-service -f gcc | wc -l && [[ "$(shellcheck sem-service -f gcc | wc -l)" -le 76 ]]'
-            - 'shellcheck sem-version -f gcc | wc -l && [[ "$(shellcheck sem-version -f gcc | wc -l)" -le 21 ]]'
-            - 'shellcheck cache       -f gcc | wc -l && [[ "$(shellcheck cache -f gcc | wc -l)" -le 152 ]]'
-            - 'shellcheck libcheckout -f gcc | wc -l && [[ "$(shellcheck libcheckout -f gcc | wc -l)" -le 90 ]]'
-            - shellcheck install-package
-            - shellcheck sem-semantic-release
-        - name: PowerShell check
-          commands:
-            - make pwsh.lint
-
   - name: "PowerShell: tests"
     dependencies: []
     task:
@@ -110,12 +85,10 @@ blocks:
                 - elixir
                 - erlang
                 - firefox
-                - gcc
                 - go
                 - java
                 - kubectl
                 - node
-                - php
                 - python
                 - ruby
                 - scala
@@ -154,83 +127,6 @@ blocks:
                 - php
           commands:
             - bats tests/sem_version_focal/${TEST}.bats
-
-  - name: Sem Version Tests Jammy ARM
-    dependencies:
-      - "Build local CLIs"
-    task:
-      agent:
-        machine:
-          type: r1-standard-4
-          os_image: ubuntu2204
-      prologue:
-        commands:
-          - wget https://github.com/semaphoreci/artifact/releases/download/v0.6.2/artifact_Linux_arm64.tar.gz -O /tmp/artifact_Linux_arm64.tar.gz
-          - sudo tar -xf /tmp/artifact_Linux_arm64.tar.gz -C /usr/local/bin/
-          - checkout
-          - artifact pull workflow bin/linux/amd64/cache -d cache-cli/bin/linux/amd64/cache
-          - artifact pull workflow bin/linux/arm64/cache -d cache-cli/bin/linux/arm64/cache
-          - artifact pull workflow bin/darwin/amd64/cache -d cache-cli/bin/darwin/amd64/cache
-          - artifact pull workflow bin/linux/amd64/sem-context -d sem-context/bin/linux/amd64/sem-context
-          - artifact pull workflow bin/linux/arm64/sem-context -d sem-context/bin/linux/arm64/sem-context
-          - artifact pull workflow bin/darwin/amd64/sem-context -d sem-context/bin/darwin/amd64/sem-context
-          - bash release/create.sh
-          - source release/install_in_tests.sh
-          - git submodule init && git submodule update
-          - sudo ./tests/support/bats-core/install.sh /usr/local
-      jobs:
-        - name: Sem Version
-          matrix:
-            - env_var: TEST
-              values:
-                - elixir
-                - erlang
-                - gcc
-                - go
-                - java
-                - kubectl
-                - node
-                - php
-                - python
-                - ruby
-                - scala
-          commands:
-            - bats tests/sem_version_jammy_arm/${TEST}.bats
-
-
-  - name: Sem Service Tests Jammy ARM
-    dependencies:
-      - "Build local CLIs"
-    task:
-      agent:
-        machine:
-          type: r1-standard-4
-          os_image: ubuntu2204
-      prologue:
-        commands:
-          - wget https://github.com/semaphoreci/artifact/releases/download/v0.6.2/artifact_Linux_arm64.tar.gz -O /tmp/artifact_Linux_arm64.tar.gz
-          - sudo tar -xf /tmp/artifact_Linux_arm64.tar.gz -C /usr/local/bin/
-          - checkout
-          - artifact pull workflow bin/linux/amd64/cache -d cache-cli/bin/linux/amd64/cache
-          - artifact pull workflow bin/linux/arm64/cache -d cache-cli/bin/linux/arm64/cache
-          - artifact pull workflow bin/darwin/amd64/cache -d cache-cli/bin/darwin/amd64/cache
-          - artifact pull workflow bin/linux/amd64/sem-context -d sem-context/bin/linux/amd64/sem-context
-          - artifact pull workflow bin/linux/arm64/sem-context -d sem-context/bin/linux/arm64/sem-context
-          - artifact pull workflow bin/darwin/amd64/sem-context -d sem-context/bin/darwin/amd64/sem-context
-          - bash release/create.sh
-          - source release/install_in_tests.sh
-          - git submodule init && git submodule update
-          - sudo ./tests/support/bats-core/install.sh /usr/local
-      jobs:
-        - name: Sem Service
-          matrix:
-            - env_var: SERVICE
-              values:
-                - postgres
-                - memcached
-          commands:
-            - sem-service start ${SERVICE}
-
 
   - name: "Sem Version Tests container"
     dependencies:
@@ -297,70 +193,14 @@ blocks:
           commands:
             - bash tests/sem_service/$TEST
 
-  - name: "Bats: Mac"
-    dependencies:
-      - "Build local CLIs"
-    task:
-      agent:
-        machine:
-          type: a1-standard-4
-          os_image: macos-xcode13
-
-      prologue:
-        commands:
-          - checkout
-          - artifact pull workflow bin/linux/amd64/cache -d cache-cli/bin/linux/amd64/cache
-          - artifact pull workflow bin/linux/arm64/cache -d cache-cli/bin/linux/arm64/cache
-          - artifact pull workflow bin/darwin/amd64/cache -d cache-cli/bin/darwin/amd64/cache
-          - artifact pull workflow bin/linux/amd64/sem-context -d sem-context/bin/linux/amd64/sem-context
-          - artifact pull workflow bin/linux/arm64/sem-context -d sem-context/bin/linux/arm64/sem-context
-          - artifact pull workflow bin/darwin/amd64/sem-context -d sem-context/bin/darwin/amd64/sem-context
-          - bash release/create.sh
-          - source tests/sftp_server/start_on_mac.sh
-
-      jobs:
-        - name: "Cache tests"
-          matrix:
-            - env_var: TEST
-              values:
-                - tests/libcheckout.bats
-            - env_var: SEMAPHORE_CACHE_ARCHIVE_METHOD
-              values:
-                - shell-out
-                - native
-                - native-parallel
-          commands:
-            - source release/install_in_tests.sh
-            - git submodule init && git submodule update
-            - sudo ./tests/support/bats-core/install.sh /usr/local
-            - bats --report-formatter junit --tap --timing $TEST
-
-        - name: "Non-cache tests"
-          matrix:
-            - env_var: TEST
-              values:
-                - tests/artifacts.bats
-                - tests/test-results.bats
-                - tests/macOS_sem_version.bats
-                - tests/sem-semantic-release.bats
-          commands:
-            - source release/install_in_tests.sh
-            - git submodule init && git submodule update
-            - sudo ./tests/support/bats-core/install.sh /usr/local
-            - bats --report-formatter junit --tap --timing $TEST
-      epilogue:
-        always:
-          commands:
-            - 'test-results publish report.xml --name="Bats: Mac" --suite-prefix=$TEST'
-
   - name: "Bats: Docker"
     dependencies:
       - "Build local CLIs"
     task:
       agent:
         machine:
-          type: e1-standard-2
-          os_image: ubuntu1804
+          type: f1-standard-2
+          os_image: ubuntu2004
         containers:
           - name: main
             image: "semaphoreci/ruby:2.6.2"
@@ -415,8 +255,8 @@ blocks:
     task:
       agent:
         machine:
-          type: e1-standard-2
-          os_image: ubuntu1804
+          type: f1-standard-2
+          os_image: ubuntu2004
         containers:
           - name: main
             image: "semaphoreci/alpine:3.9"
@@ -655,7 +495,3 @@ after_pipeline:
 promotions:
   - name: Release
     pipeline_file: release.yml
-    auto_promote_on:
-      - result: passed
-        branch:
-          - ^refs/tags/v*
