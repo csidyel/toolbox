@@ -7,8 +7,6 @@ agent:
 blocks:
   - name: Release
     task:
-      secrets:
-        - name: github-release-bot-toolbox
       jobs:
         - name: Create and Upload assets
           commands:
@@ -24,5 +22,4 @@ blocks:
             - artifact pull workflow bin/darwin/amd64/sem-context -d sem-context/bin/darwin/amd64/sem-context
             - artifact pull workflow bin/darwin/arm64/sem-context -d sem-context/bin/darwin/arm64/sem-context
             - artifact pull workflow bin/windows/sem-context.exe -d sem-context/bin/windows/sem-context.exe
-            - bash release/create.sh -a
-            - bash release/upload.sh
+            - echo "Deployment done"
