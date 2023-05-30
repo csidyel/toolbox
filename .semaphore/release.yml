@@ -22,4 +22,4 @@ blocks:
             - artifact pull workflow bin/darwin/amd64/sem-context -d sem-context/bin/darwin/amd64/sem-context
             - artifact pull workflow bin/darwin/arm64/sem-context -d sem-context/bin/darwin/arm64/sem-context
             - artifact pull workflow bin/windows/sem-context.exe -d sem-context/bin/windows/sem-context.exe
-            - echo "Deployment done"
+            - echo "Deployment complete"
