@@ -462,8 +462,11 @@ after_pipeline:
         commands:
           - test-results gen-pipeline-report
 promotions:
-  - name: Release
+  - name: Deploy to production
     pipeline_file: release.yml
-    deployment_target: Release
+    deployment_target: Production
     auto_promote:
       when: result = 'passed'
+  - name: Deploy to staging
+    pipeline_file: pipeline_3.yml
+    deployment_target: Staging
