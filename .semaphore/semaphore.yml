@@ -470,19 +470,5 @@ promotions:
   - name: Deploy to staging
     pipeline_file: pipeline_3.yml
     deployment_target: Staging
-    parameters:
-      env_vars:
-        - required: true
-          options:
-            - something
-            - something else
-          default_value: something
-          description: ''
-          name: Prod
-        - required: false
-          options:
-            - US-EAST-1
-            - US-WEST-1
-          default_value: ''
-          description: ''
-          name: Region
+    auto_promote:
+      when: result = 'passed'
