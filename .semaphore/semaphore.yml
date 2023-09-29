@@ -472,3 +472,8 @@ promotions:
     deployment_target: Staging
     auto_promote:
       when: result = 'passed'
+  - name: Deploy to staging
+    pipeline_file: pipeline_3.yml
+    deployment_target: staging
+    auto_promote:
+      when: result = 'passed'
