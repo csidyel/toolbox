@@ -10,4 +10,4 @@ blocks:
       jobs:
         - name: Create and Upload assets
           commands:
-            - echo $DEMO
+            - echo "test"
