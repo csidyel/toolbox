@@ -472,3 +472,19 @@ promotions:
     deployment_target: production
     auto_promote:
       when: branch = 'master' AND result = 'passed'
+  - name: Promotion 3
+    pipeline_file: pipeline_4.yml
+    deployment_target: Test
+    parameters:
+      env_vars:
+        - required: true
+          options:
+            - env_one
+            - env_two
+            - env_three
+            - one
+            - five
+            - six
+          default_value: ''
+          description: ''
+          name: PARAMETERS

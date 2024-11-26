@@ -1,5 +1,5 @@
 version: v1.0
-name: Deploy to production
+name: Pipeline 4
 agent:
   machine:
     type: e1-standard-2
@@ -10,4 +10,4 @@ blocks:
       jobs:
         - name: 'Job #1'
           commands:
-            - sleep 120
+            - echo "job 1"
