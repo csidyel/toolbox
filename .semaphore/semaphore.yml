@@ -719,3 +719,7 @@ after_pipeline:
           - bash release/create.sh
           - source release/install_in_tests.sh
           - test-results gen-pipeline-report
+promotions:
+  - name: Promotion 1
+    pipeline_file: pipeline_3.yml
+    deployment_target: example
