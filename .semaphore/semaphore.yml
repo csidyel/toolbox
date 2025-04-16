@@ -2,7 +2,7 @@ version: v1.0
 name: Toolbox S2 project
 agent:
   machine:
-    type: e2-standard-2
+    type: f1-standard-2
     os_image: ubuntu2004
 blocks:
   - name: Build local CLIs
@@ -77,7 +77,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e2-standard-2
+          type: f1-standard-2
           os_image: ubuntu2004
       prologue:
         commands:
@@ -121,7 +121,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e2-standard-2
+          type: f1-standard-2
           os_image: ubuntu2204
       prologue:
         commands:
@@ -203,7 +203,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e2-standard-2
+          type: f1-standard-2
           os_image: ubuntu2004
         containers:
           - name: main
@@ -413,7 +413,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e2-standard-2
+          type: f1-standard-2
           os_image: ubuntu2004
         containers:
           - name: main
@@ -486,7 +486,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e2-standard-2
+          type: f1-standard-2
           os_image: ubuntu2004
         containers:
           - name: main
@@ -674,7 +674,7 @@ blocks:
     task:
       agent:
         machine:
-          type: e2-standard-2
+          type: f1-standard-2
           os_image: ubuntu2004
         containers:
           - name: main
