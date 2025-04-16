@@ -4,8 +4,6 @@ agent:
   machine:
     type: e2-standard-2
     os_image: ubuntu2004
-execution_time_limit:
-  minutes: 30
 blocks:
   - name: Build local CLIs
     dependencies: []
@@ -721,10 +719,3 @@ after_pipeline:
           - bash release/create.sh
           - source release/install_in_tests.sh
           - test-results gen-pipeline-report
-promotions:
-  - name: Release
-    pipeline_file: release.yml
-    auto_promote_on:
-      - result: passed
-        branch:
-          - ^refs/tags/v*
